@@ -1,23 +1,27 @@
-NASM := nasm
-ASMFLAGS := -felf64
-
+CC := clang
 LD := ld.lld
-CC = clang
-LDFLAGS := -target x86_64-elf -ffreestanding -mno-red-zone -O2 -nostdlib -mmodel=kernel
+NASM := nasm
 
-boot.o: src/boot.asm
-	$(NASM) $(ASMFLAGS) $< -o $@
+ASM_SOURCES := $(shell find src/ -name *.asm)
+ASM_OBJECTS := $(patsubst src/%.asm,build/%.o, $(ASM_SOURCES))
 
-os.bin: boot.o
-	$(CC) -T linker.ld -o $@ $^ $(LDFLAGS)
+.PHONY: all
+all: build
 
-.PHONY: check_multiboot
-check_multiboot: os.bin
-	grub-file --is-x86-multiboot $<
+$(ASM_OBJECTS): build/%.o : src/%.asm
+	mkdir -p $(dir $@)
+	$(NASM) -f elf64 $(patsubst build/%.o, src/%.asm, $@) -o $@
 
-.PHONY: clean
-clean:
-	rm -f *.bin
+dist/kernel.bin: $(ASM_OBJECTS) linker.ld
+	mkdir -p dist
+	$(LD) -n -o dist/kernel.bin -T linker.ld $(ASM_OBJECTS)
 
-.PHONY: run
-run: os.iso
+iso/boot/kernel.bin: dist/kernel.bin
+	cp $< $@
+
+dist/os.iso: iso/boot/kernel.bin iso/boot/grub/grub.cfg
+	grub-mkrescue -o $@ iso
+
+.PHONY: build
+build: dist/os.iso
+

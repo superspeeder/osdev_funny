@@ -1,3 +1,5 @@
+iso/boot/kernel.bin
 *.bin
-*.elf
-log.txt
+*.iso
+*.o
+dist/
