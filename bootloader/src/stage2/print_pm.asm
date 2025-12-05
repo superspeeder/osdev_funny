@@ -24,3 +24,18 @@ pm_print_done:
     popa
     ret
 
+pm_clear_screen:
+    pusha
+
+    mov al, ' '
+    mov ah, WHITE_ON_BLACK
+    mov edx, VIDEO_MEMORY
+
+    mov ecx, 80 * 25
+    .loop:
+        mov [edx], ax
+        add edx, 2
+        loop .loop
+    
+    popa
+    ret
