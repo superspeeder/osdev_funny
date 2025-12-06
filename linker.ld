@@ -2,7 +2,7 @@ ENTRY(start)
 
 SECTIONS
 {
-    . = 2M;
+    . = 1M;
     
     .boot :
     {
@@ -14,3 +14,4 @@ SECTIONS
         *(.text)
     }
 }
+

@@ -1,0 +1,5 @@
+iso/boot/kernel.bin
+*.bin
+*.iso
+*.o
+dist/

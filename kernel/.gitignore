@@ -1,5 +1,3 @@
-iso/boot/kernel.bin
-*.bin
-*.iso
-*.o
-dist/
+zig-out/
+.zig-cache/
+
