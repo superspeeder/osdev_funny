@@ -12,12 +12,15 @@ $(ASM_OBJECTS): build/boot/%.o : boot/%.asm
 	mkdir -p $(dir $@)
 	$(NASM) -f elf64 $(patsubst build/boot/%.o, boot/%.asm, $@) -o $@
 
+kernel/zig-out/bin/kernel.elf:
+
 dist/kernel.bin: $(ASM_OBJECTS) linker.ld
-	mkdir -p dist
-	$(LD) -n -o dist/kernel.bin -T linker.ld $(ASM_OBJECTS)
+	mkdir -p $(dir $@)
+	$(LD) -n -o %@ -T linker.ld $(ASM_OBJECTS)
 
 iso/boot/kernel.bin: dist/kernel.bin
 	cp $< $@
+
 
 dist/os.iso: iso/boot/kernel.bin iso/boot/grub/grub.cfg
 	grub-mkrescue -o $@ iso
